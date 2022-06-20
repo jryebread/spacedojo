@@ -1,23 +1,78 @@
 import Head from 'next/head'
-
+import { Button, Form, InputGroup, FormControl } from 'react-bootstrap'
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { useState } from 'react';
 export default function Home() {
+  const [emailFinal, setEmailFinal] = useState("engineer@amazon.com");
+  var [showError, setShowError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("Invalid Email.");
+  const [success, setSuccess] = useState(false);
+
+  const saveEmail = (email) => {
+    fetch('https://buakgmuq9j.execute-api.us-east-2.amazonaws.com/prod/submitemail', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        emailAddress: email, // Use your own property name / key
+      }),
+    }, {mode: 'cors'})
+      .then((res) => console.log(res.json()))
+      .catch((err) => console.log('error'))
+  }
+
+  const onFormSubmit = ( e ) => {
+    e.preventDefault();
+    // don't remember from where i copied this code, but this works.
+    let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    const formData = new FormData(e.target),
+        formDataObj = Object.fromEntries(formData.entries())
+    console.log(formDataObj)
+    var email = formDataObj.myInput;
+    console.log("email:", email)
+    if ( re.test(email) ) {
+      setEmailFinal(email)
+      setShowError(false)
+      setSuccess(true)
+      saveEmail(email)
+        // this is a valid email address
+        // call setState({email: email}) to update the email
+        // or update the data in redux store.
+    }
+    else {
+      console.log("ERROR")
+      setShowError(true)
+      setEmailFinal("")
+        // invalid email, maybe show an error to the user.
+    }
+
+}
   return (
     <div className="container">
       <Head>
-        <title>Create Next App</title>
+        <title>SpaceDojo</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <main>
-        <h1 className="title">
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className="description">
-          Get started by editing <code>pages/index.js</code>
+        <h1 color="white" className="title">
+         SpaceDojo
+        </h1> <br></br>
+        <iframe src='https://my.spline.design/emojirocketcopy-00753ec739859a42638ed73ab8aca380/' frameborder='0' width='100%' height='400px'></iframe>
+                                                <p className="description">
+          System design mock interviews with other real engineers
         </p>
 
-        <div className="grid">
+        <br></br> <br></br> 
+
+        <b>
+        <p className="description">
+          Join the FREE community with your work email
+        </p></b>
+
+
+        {/* <div className="grid">
           <a href="https://nextjs.org/docs" className="card">
             <h3>Documentation &rarr;</h3>
             <p>Find in-depth information about Next.js features and API.</p>
@@ -27,8 +82,7 @@ export default function Home() {
             <h3>Learn &rarr;</h3>
             <p>Learn about Next.js in an interactive course with quizzes!</p>
           </a>
-
-          <a
+                    <a
             href="https://github.com/vercel/next.js/tree/master/examples"
             className="card"
           >
@@ -45,19 +99,26 @@ export default function Home() {
               Instantly deploy your Next.js site to a public URL with Vercel.
             </p>
           </a>
-        </div>
-      </main>
+        </div> */}
 
-      <footer>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel" className="logo" />
-        </a>
-      </footer>
+        {!success ? <>
+        <Form onSubmit={onFormSubmit}>
+        <Form.Group className="mb-3" controlId="formBasicEmail">
+
+          <FormControl type="text" name="myInput" placeholder="engineer@amazon.com"
+ aria-label="Large" aria-describedby="inputGroup-sizing-lg" />
+        </Form.Group>
+        <center><Button type="submit">Join</Button></center>
+
+        </Form>
+
+        {showError == true ? <p>{errorMsg}</p> : <></>}
+        </>
+        : <p> Welcome! We'll be in touch shortly</p> }
+        {/* <small> <i>The super secret discord server link will be sent to your work email to verify your job status</i>
+        </small> */}
+
+      </main>
 
       <style jsx>{`
         .container {
