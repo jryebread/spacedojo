@@ -68,7 +68,7 @@ export default function Home() {
 
         <b>
         <p className="description">
-          Join the FREE community with your work email
+          Join the FREE community 
         </p></b>
 
 
